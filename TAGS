@@ -1,0 +1,172 @@
+
+napt.c,736
+#define __NAPT_MAIN_C__1,0
+kmem_cache_t *napt_ctrack_cachep;12,250
+rwlock_t ctrack_lock;13,284
+struct list_head cthead;14,306
+static inline void ctrack_get(31,754
+static inline void ctrack_put(38,904
+static void death_by_timeout(51,1326
+void napt_clear_ctracks(66,1820
+int napt_new_ctrack(83,2279
+static int tuple_cmp(130,3571
+struct tn_ctrack * napt_find_ctrack(147,3925
+int napt_mk_tuple(156,4139
+int napt_translate(180,4686
+static unsigned int redirect_hook(253,6469
+static struct nf_hook_ops redir4 318,8417
+static struct nf_hook_ops redir6 321,8517
+#define PROCFILE 326,8640
+static int proc_read(327,8672
+static struct proc_dir_entry *p;351,9275
+int __init napt_init(352,9308
+void __exit napt_finish(388,10273
+
+napt_kill.c,146
+static int write_proc(4,46
+#define PROCFILE 36,810
+static struct proc_dir_entry *p;37,839
+int __init kill_init(39,873
+void kill_fini(51,1090
+
+napt_misc.c,0
+
+napt_proto.c,800
+#define __NAPT_PROTO_C__1,0
+static struct protos_factory protos_factory4,44
+} protos[7,141
+static kmem_cache_t *ptree_cache;10,165
+static rwlock_t  ptree_lock,11,199
+static rwlock_t  ptree_lock, pfact_lock;11,199
+static struct tn_proto *rootproto 12,240
+static inline void mod_refcnt(18,428
+void napt_proto_reset_refcnt(24,576
+int napt_register_proto(37,922
+int napt_unregister_proto(64,1575
+struct tn_proto *napt_find_proto_by_pkt(82,1897
+static struct tn_proto *fpbn(119,2752
+struct tn_proto *napt_find_proto_by_name(142,3397
+static struct tn_proto *new_proto(156,3665
+int napt_append_proto_tree(191,4562
+int napt_remove_proto_tree(241,5623
+int generic_new_ctrack(271,6385
+void *find_ip6_hdr(278,6539
+int __init napt_proto_init(315,7435
+void __exit napt_proto_finish(325,7696
+
+napt_proto_icmp.c,413
+struct icmp_data icmp_data4,20
+#define ECHO_TIMEOUT 10,103
+static int update_state(12,134
+static int ismine(28,556
+static int pkt_to_tuple(51,1230
+static int complete_tuple(118,3006
+static int tuple_cmp(212,5287
+static inline int icmp_inner_translate(246,6194
+static int translate(270,6845
+static int new(423,11205
+int __init napt_proto_icmp_init(442,11616
+void __exit napt_proto_icmp_exit(451,11860
+
+napt_proto_ip.c,316
+__u32 g_v4addr;4,47
+static int update_state(6,64
+static int ismine(34,634
+static int pkt_to_tuple(76,1775
+static int complete_tuple(99,2529
+static int tuple_cmp(115,2948
+static int translate(141,3841
+static int new(377,10538
+int __init napt_proto_ip_init(396,10947
+void __exit napt_proto_ip_exit(411,11273
+
+napt_proto_tcp.c,1115
+struct tcp_data tcp_data4,42
+static unsigned long tcp_timeouts[8,96
+enum tcp_conntrack tcp_conntrack22,598
+    TCP_CONNTRACK_NONE,23,619
+    TCP_CONNTRACK_ESTABLISHED,24,643
+    TCP_CONNTRACK_SYN_SENT,25,674
+    TCP_CONNTRACK_SYN_RECV,26,702
+    TCP_CONNTRACK_FIN_WAIT,27,730
+    TCP_CONNTRACK_TIME_WAIT,28,758
+    TCP_CONNTRACK_CLOSE,29,787
+    TCP_CONNTRACK_CLOSE_WAIT,30,812
+    TCP_CONNTRACK_LAST_ACK,31,842
+    TCP_CONNTRACK_LISTEN,32,870
+    TCP_CONNTRACK_MAX33,896
+#define sNO 36,922
+#define sES 37,953
+#define sSS 38,991
+#define sSR 39,1026
+#define sFW 40,1061
+#define sTW 41,1096
+#define sCL 42,1132
+#define sCW 43,1164
+#define sLA 44,1201
+#define sLI 45,1236
+#define sIV 46,1269
+static enum tcp_conntrack tcp_conntracks[51,1436
+static unsigned int get_conntrack_index(72,2336
+static int update_state(81,2558
+static int ismine(92,2845
+static int pkt_to_tuple(121,3653
+static int complete_tuple(148,4298
+static int tuple_cmp(193,5394
+static int translate(217,6041
+static int new(297,8486
+int __init napt_proto_tcp_init(316,8896
+void __exit napt_proto_tcp_exit(324,9135
+
+napt_proto_udp.c,327
+struct udp_data udp_data4,42
+static int update_state(11,212
+static int ismine(38,781
+static int pkt_to_tuple(66,1608
+static int complete_tuple(92,2252
+static int tuple_cmp(136,3269
+static int translate(160,3943
+static int new(235,6213
+int __init napt_proto_udp_init(255,6679
+void __exit napt_proto_udp_exit(264,6920
+
+napt.h,1186
+#define __NAPT_H__2,19
+#define ASSERT_READ_LOCK(ASSERT_READ_LOCK24,564
+#define ASSERT_WRITE_LOCK(ASSERT_WRITE_LOCK25,592
+#define MAX_TUPLE_DATA 31,725
+#define MAX_PROTO_NEST 32,754
+#define PROTONAME_MAX 33,781
+#define MAX_PROTOS 34,809
+#define V4TOV6 36,838
+#define V6TOV4 37,855
+#define ST_GROUND 40,895
+#define ST_ORIGDIR 41,935
+#define ST_REPLIED 42,956
+#define CTRACK 45,990
+#define PROTO 46,1028
+#define VOID 47,1065
+#define LIST 48,1091
+#define IP6_MF 51,1162
+#define IP6_RES 52,1189
+#define IP6_OFFSET 53,1216
+#define SECS 56,1303
+#define MINS 57,1320
+#define HOURS 58,1343
+#define DAYS 59,1367
+#define NAT_HOST 62,1420
+#define NAT_DEST 63,1439
+#define READ_LOCK(READ_LOCK66,1475
+#define READ_UNLOCK(READ_UNLOCK67,1518
+#define WRITE_LOCK(WRITE_LOCK68,1563
+#define WRITE_UNLOCK(WRITE_UNLOCK69,1607
+} icmp_hint;icmp_hint75,1720
+struct tn_translate tn_translate77,1734
+struct tn_tuple tn_tuple86,1887
+struct tn_ctrack tn_ctrack93,2062
+struct tn_proto tn_proto103,2268
+struct ip_option ip_option133,3066
+static inline void my_ip4send(196,4767
+static inline void my_ip6send(201,4841
+#define AF_NAPT 210,5022
+#define PF_NAPT 211,5045

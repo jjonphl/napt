@@ -1,0 +1,7 @@
+#! /bin/sh
+#rmmod napt_proto_ip napt napt_proto 2>/dev/null
+#gcc `cat opts` napt_proto.c
+#insmod napt_proto.o
+insmod napt.o
+insmod napt_proto_ip.o
+#insmod napt_proto_tcp.o

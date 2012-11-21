@@ -1,0 +1,1 @@
+-O -D__KERNEL__ -I/usr/src/linux/include -Wall -DMODULE -DMODVERSIONS -DEXPORT_SYMTAB -include /usr/src/linux/include/linux/modversions.h -fno-common -c

@@ -1,0 +1,86 @@
+I. Usage prerequisites
+
+1. The napt host should have (at least) 2 interfaces, one to an IPv6 (only)
+network and the other to and IPv4 (only) network.
+
+2. The IPv6 link should have a global address. This is
+irrelevant as of the moment to any of the modules, it was just 
+error-checked that way.
+
+3. At the IPv6 network, do
+	# ip -6 route add ::/96 via $NAPT_V6_IFACE dev $DEV
+
+4. Insmod in the following order
+	# insmod napt_proto.o
+	# insmod napt.o
+	# insmod napt_proto_ip.o [v4iface=$V4IF_NAME] [v6iface=$V6IF_NAME]
+	# insmod napt_proto_{tcp,udp,icmp}.o
+
+   The default for napt_proto_ip.o arguments, for v4iface the first 
+   non-loopback device and for v6iface the second non-loopback device.
+   DO NOT set, for example, v6iface=eth0 and not specify v4iface 
+   (assuming you have eth0 and eth1 only), unless eth0 both has the IPv4
+   and IPv6 address to napt.
+
+5. Make sure that the IPv6 host and the napt host have each other on
+   their IPv6 arp (?) cache. You can check this out with
+	# ip -6 neigh show
+
+  This can usually be fixed by ping6 from one to the other.
+   
+6. Get your pen ready for some kernel oops (only if you have that frame
+   something option for your kernel, if I'm correct)! ;P
+
+II. Implementation Overview
+
+    The implementation consists of rudimentary object oriented constructs
+ripped-off from the part of the kernel I've studied and my own style.
+There are two main modules, the translation and protocol-handler coordinator.
+
+    The translation (napt.c) module attaches itself to NF_IP(6)_PRE_ROUTING 
+hooks in both IPv4 and IPv6 netfilter. It attempts to come up with a
+protocol-handler hierarchy that would be responsible for creating their
+connection tracking information and, of course, translating. The protocol-
+handler hierarchy is derived by using protocol-handler coordinator interface.
+An example of a hierarchy would be an IP protocol-handler followed by a TCP
+protocol-handler.  This architecture (theoretically) would allow for 
+application layer gateways by creating appropriate protocol-handler.
+
+    The protocol-handler coordinator is composed of a protocol "factory"
+and protocol tree management. The OO pattern factory is implemented by
+making protocol modules register their name and constructor to the module.
+To make a protocol-handler instance, this module creates the protocol in 
+its private cache and presents it to its corresponding constructor. This 
+is then appended to the protocol tree, which comprises all the possible 
+protocol hiearchy represented by a path from (one of the) root protocol(s) 
+to a leaf. Module usage counts are  incremented as necessary so that a 
+module can't be unloaded if the handler it registered still has a child 
+in the tree.
+
+III. Limitation
+1. As of now, translation is possible only _from_ IPv6 _to_ IPv4 network.
+A IPv4 to IPv6 mapping could have been possible via implicit mapping
+with netmask ::ffff:a.b.c.d which I had problems doing with the USAGI patch.
+
+2. None of the ICMP errors were tested to work, as stated in the SIIT RFC.
+Ping works though :)
+
+3. Implementation of application layer gateways (ALG) on top of napt are 
+not demonstrated. (If only there were a DNS ALG then everything would be
+smoother)
+
+4. The translation of Destination Unreachable (DEST_UNREACH) ICMP errors 
+proves to be one of the more interesting considerations. Since only IPv6 
+originating traffic can create a new ctrack, a DEST_UNREACH coming from
+IPv4 will certainly not pass through. There is a possible "smoothest" 
+solution and a possible consolation I can think of: the solution could be
+merging the IP and ICMP protocol handler, the consolation is that the
+application would time out anyway =).
+
+5. Fragments
+
+III. Testing
+1. TCP: telnet, ssh
+3. UDP: attached udp{srv,cl,cl6} (I just copied them, I think from Beej's
+        tutorial, and modified the v6 equivalent.)
+2. ICMP: ping
